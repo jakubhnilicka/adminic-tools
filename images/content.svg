@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 43.2 (39069) - http://www.bohemiancoding.com/sketch -->
+    <title>content copy</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Artboard" transform="translate(-25.000000, -30.000000)">
+            <g id="Content" transform="translate(25.000000, 30.000000)">
+                <g id="BG">
+                    <rect id="Rectangle" x="0" y="0" width="24" height="24"></rect>
+                </g>
+                <path d="M18.5325556,6 L5.46666666,6 C5.20844444,6 5,6.20766666 5,6.46666666 L5,8.33333334 L19,8.33333334 L19,6.46666666 C19,6.20766666 18.79,6 18.5325556,6 Z M5.77777778,17.3555556 C5.77777778,17.9544444 6.267,18.4444444 6.86588889,18.4444444 L17.1325556,18.4444444 C17.7314444,18.4444444 18.2214444,17.9536666 18.2214444,17.3555556 L18.2214444,9.11111111 L5.77777778,9.11111111 L5.77777778,17.3555556 Z M9.66666664,10.6666666 L14.3333334,10.6666666 L14.3333334,12.2222222 L9.66666664,12.2222222 L9.66666664,10.6666666 Z" fill="#FFFFFF" fill-rule="nonzero"></path>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -1,0 +1,12 @@
+<?php
+
+function adminic_tools_install() {
+  module_set_weight('adminic_toolbar', 999);
+}
+
+/**
+ * Set Adminic Toolbar Weight
+ */
+function adminic_tools_update_8001() {
+  module_set_weight('adminic_tools', 999);
+}

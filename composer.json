@@ -1,0 +1,16 @@
+{
+    "name": "jakubhnilicka/adminic_tools",
+    "description": "Usefull tools for Drupal 8.",
+    "homepage": "https://github.com/jakubhnilicka/adminic_tools",
+    "type": "drupal-module",
+    "authors": [
+        {
+            "name": "Jakub Hnilicka",
+            "email": "ahoj@jakubhnilicka.cz",
+            "role": "Maintainer"
+        }
+    ],
+    "require": {},
+    "license": "GPL-2.0+",
+    "minimum-stability": "dev"
+}

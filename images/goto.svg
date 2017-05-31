@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="64px" height="64px" viewBox="0 0 64 64" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 42 (36781) - http://www.bohemiancoding.com/sketch -->
+    <title>goto</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Desktop-HD" transform="translate(-629.000000, -723.000000)" fill-rule="nonzero" fill="#FFFFFF">
+            <g id="Menu" transform="translate(629.000000, 463.000000)">
+                <g id="goto" transform="translate(21.000000, 283.000000)">
+                    <path d="M13.4444444,10.8838889 L13.4444444,16.2091111 L22,8.03244444 L13.4444444,0 L13.4444444,4.86811111 C2.71944444,4.86811111 0,16.7627778 0,16.7627778 C3.036,11.3996667 7.623,10.8838889 13.4444444,10.8838889 Z" id="Shape"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

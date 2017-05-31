@@ -1,0 +1,441 @@
+<?php
+
+use Drupal\Core\Url;
+use Drupal\Core\Breadcrumb\Breadcrumb;
+use Drupal\Core\Routing\RouteMatchInterface;
+
+include 'adminic_tools.inc';
+
+/**
+ * Implements hook_toolbar();
+ *
+ * @return array|null
+ */
+function adminic_tools_toolbar() {
+  $user = \Drupal::currentUser();
+  if ($user->hasPermission('access toolbar')) {
+
+    $manage = get_manage();
+    $items = [];
+
+    $config = \Drupal::config('system.site');
+    $site_name = $config->get('name');
+
+    // Home Button.
+    $items['adminic_home'] = [
+      '#type'               => 'toolbar_item',
+      'tab'                 => [
+        '#type'       => 'link',
+        '#title'      => $site_name,
+        '#url'        => Url::fromRoute('<front>'),
+        '#attributes' => [
+          'title' => t('Return to site content'),
+          'class' => ['front', 'toolbar-icon', 'toolbar-icon-adminic-home'],
+        ],
+        '#cache'      => [
+          'contexts' => ['user',],
+        ],
+      ],
+      '#wrapper_attributes' => [
+        'class' => [],
+      ],
+      '#weight'             => -99,
+    ];
+
+    // Content Administration.
+    $items['adminic_content'] = [
+      '#type'   => 'toolbar_item',
+      'tab'     => [
+        '#type'       => 'link',
+        '#title'      => t('Content'),
+        '#url'        => Url::fromRoute('system.admin_content'),
+        '#attributes' => [
+          'title' => t('My account'),
+          'class' => ['toolbar-icon', 'toolbar-icon-adminic-content'],
+        ],
+        '#cache'      => [
+          'contexts' => ['user',],
+        ],
+      ],
+      'tray'    => [
+        '#heading' => t('Content'),
+        'content'  => $manage['content'],
+      ],
+      '#weight' => 100,
+    ];
+
+    // Modules.
+    if ($user->hasPermission('administer modules')) {
+      $items['adminic_extend'] = [
+        '#type'   => 'toolbar_item',
+        'tab'     => [
+          '#type'       => 'link',
+          '#title'      => t('Extend'),
+          '#url'        => Url::fromUserInput('/admin/modules'),
+          '#attributes' => [
+            'title' => t('Modules'),
+            'class' => ['toolbar-icon', 'toolbar-icon-adminic-extend'],
+          ],
+          '#cache'      => [
+            'contexts' => ['user',],
+          ],
+        ],
+        '#weight' => 80,
+      ];
+    }
+
+    // Themes.
+    if ($user->hasPermission('administer themes')) {
+      $items['adminic_appearance'] = [
+        '#type'   => 'toolbar_item',
+        'tab'     => [
+          '#type'       => 'link',
+          '#title'      => t('Appearance'),
+          '#url'        => Url::fromUserInput('/admin/appearance'),
+          '#attributes' => [
+            'title' => t('Appearance'),
+            'class' => ['toolbar-icon', 'toolbar-icon-adminic-appearance'],
+          ],
+          '#cache'      => [
+            'contexts' => ['user',],
+          ],
+        ],
+        '#weight' => 81,
+      ];
+    }
+
+    // Config Administration.
+    $items['adminic_config'] = [
+      '#type'   => 'toolbar_item',
+      'tab'     => [
+        '#type'       => 'link',
+        '#title'      => t('Config'),
+        '#url'        => Url::fromUserInput('/admin/config'),
+        '#attributes' => [
+          'title' => t('Config'),
+          'class' => ['toolbar-icon', 'toolbar-icon-adminic-config'],
+        ],
+        '#cache'      => [
+          'contexts' => ['user',],
+        ],
+      ],
+      'tray'    => [
+        '#heading' => t('Configuration'),
+        'content' => $manage['configuration'],
+      ],
+      '#weight' => 101,
+    ];
+    return $items;
+  }
+
+  return NULL;
+
+}
+
+function get_manage() {
+  $blocks = _adminic_tools_entity_discovery();
+
+  $return = [];
+  foreach ($blocks['content'] as $key => $block) {
+
+    $return['content'][$key] = add_manage(
+      $block['type'],
+      $block['add_url'],
+      $block['list_url'],
+      $block['list_parametter'],
+      $block['crete_permissions'],
+      $block['add_bundle_url'],
+      $block['add_bundle_label']);
+  }
+
+  foreach ($blocks['configuration'] as $key => $block) {
+
+    $return['configuration'][$key] = add_manage(
+      $block['type'],
+      $block['add_url'],
+      $block['list_url'],
+      $block['list_parametter'],
+      $block['crete_permissions'],
+      $block['add_bundle_url'],
+      $block['add_bundle_label']);
+  }
+  return $return;
+}
+
+
+/**
+ * Implements hook_toolbar_alter();
+ *
+ * @param $items
+ */
+function adminic_tools_toolbar_alter(&$items) {
+  //kpr($items);
+  unset($items['home']);
+  //unset($items['admin_toolbar_tools']);
+  //$items['user']['#wrapper_attributes']['class'][] = 'right';
+  //$items['block_place']['#wrapper_attributes']['class'][] = 'right';
+  //$items['contextual']['#wrapper_attributes']['class'][] = 'right';
+  foreach ($items as $key => $tab) {
+    $items[$key]['#wrapper_attributes']['class'][] = $key;
+  }
+  $items['user']['#wrapper_attributes']['class'][] = 'right';
+  $items['adminic_home']['#weight'] = -99;
+  $items['adminic_content']['#weight'] = 0;
+  $items['adminic_config']['#weight'] = 1;
+  $items['adminic_extend']['#weight'] = 2;
+  $items['adminic_appearance']['#weight'] = 3;
+  $items['administration']['#weight'] = 10;
+  $items['shortcuts']['#weight'] = 11;
+  $items['devel']['#weight'] = 12;
+  $items['coffee']['#weight'] = 13;
+  $items['contextual']['#weight'] = 99;
+  $items['user']['#weight'] = 99;
+  $items['admin_toolbar_tools']['#wrapper_attributes']['class'][] = 'hidden';
+}
+
+/**
+ * Implements hook_page_attachments();
+ *
+ * @param array $attachments
+ */
+function adminic_tools_page_attachments(array &$attachments) {
+  $attachments['#attached']['library'][] = 'adminic_tools/global-styling';
+}
+
+/**
+ * Implements hook_css_alter();
+ *
+ * @param $css
+ * @param \Drupal\Core\Asset\AttachedAssetsInterface $assets
+ */
+/*function adminic_tools_css_alter(&$css, \Drupal\Core\Asset\AttachedAssetsInterface $assets) {
+  // Remove Toolbar Styling
+  $toolbar_path = drupal_get_path('theme', 'stable');
+  unset($css[$toolbar_path . '/css/toolbar/toolbar.menu.css']);
+  unset($css[$toolbar_path . '/css/toolbar/toolbar.module.css']);
+  unset($css[$toolbar_path . '/css/toolbar/toolbar.theme.css']);
+  unset($css[$toolbar_path . '/css/toolbar/toolbar.icons.theme.css']);
+
+  // Remove Admin Toolbar Styling
+  $admin_toolbar_path = drupal_get_path('module', 'admin_toolbar');
+  unset($css[$admin_toolbar_path . '/css/admin.toolbar.css']);
+
+  // Remove Devel Toolbar
+  $devel_path = drupal_get_path('module', 'devel');
+  unset($css[$devel_path . '/css/devel.toolbar.css']);
+
+  // Remove Admin Toolbar Asset
+  foreach ($assets as $key => $asset) {
+    if ($asset == 'admin_toolbar/toolbar.tree') {
+      unset($assets[$key]);
+    }
+  }
+}*/
+
+/**
+ * Implements hook_theme().
+ */
+function adminic_tools_theme() {
+  return [
+    'adminic_content_bundler' => [
+      'variables' => [
+        'title'           => NULL,
+        'links'           => [],
+        'collection_url'  => NULL,
+        'add_bundle_url'  => NULL,
+        'add_bundle_text' => NULL,
+      ],
+    ],
+  ];
+}
+
+function _adminic_tools_entity_discovery() {
+  $entities = \Drupal::entityTypeManager()->getDefinitions();
+  $path_validator = \Drupal::service('path.validator');
+  $entity_info = [];
+  //kint($entities);
+  // Content Entities
+  foreach ($entities as $entity) {
+    $id = $entity->id();
+    $group = $entity->getGroup();
+    if ($group == 'content') {
+      //$entity_info[$group][$id]['entity_id'] = $entity->id();
+      //$entity_info[$group][$id]['entity_label'] = $entity->getLabel();
+
+      $bundle_entity_type = $entity->getBundleEntityType();
+      if ($bundle_entity_type != NULL) {
+        $entity_bundle = \Drupal::entityTypeManager()
+          ->getDefinition($bundle_entity_type);
+        $entity_info[$group][$id]['type'] = $entity_bundle->id();
+        //$entity_info[$group][$id]['bundle_label'] = $entitie_bundle->getLabel();
+        $entity_info[$group][$id]['list_url'] = NULL;
+        $entity_info[$group][$id]['add_bundle_url'] = NULL;
+        $links = array_keys($entity_bundle->getLinkTemplates());
+        //kint($entitie_bundle);
+
+        if (in_array('add-form', $links)) {
+          $add_form_url = $entity_bundle->getLinkTemplate('add-form');
+          $valid_url = $path_validator->getUrlIfValid($add_form_url);
+          if ($valid_url != FALSE) {
+            $entity_info[$group][$id]['add_bundle_url'] = $valid_url->getRouteName();
+          }
+        }
+        $entity_info[$group][$id]['add_bundle_label'] = 'New ' . $entity->getLabel() . ' Type';
+        if (in_array('collection', $links)) {
+          $add_form_url = $entity_bundle->getLinkTemplate('collection');
+          $valid_url = $path_validator->getUrlIfValid($add_form_url);
+          if ($valid_url != FALSE) {
+            $entity_info[$group][$id]['list_url'] = $valid_url->getRouteName();
+          }
+        }
+        $entity_info[$group][$id]['list_parametter'] = $entity->id();
+        $entity_info[$group][$id]['add_url'] = NULL;
+        $entity_info[$group][$id]['crete_permissions'] = $entity_bundle->getAdminPermission();
+        unset($entities[$entity_bundle->id()]);
+      }
+    }
+  }
+
+  $config_entities = [
+    'block',
+    'image_style',
+    'menu',
+    'view',
+    'user_role',
+    'menu_link_content',
+    'filter_format',
+    'date_format'
+  ];
+  \Drupal::moduleHandler()->alter('entity_disovery_config', $config_entities);
+  // Config entities
+  foreach ($entities as $entity) {
+    $id = $entity->id();
+    $group = $entity->getGroup();
+    if ($group == 'configuration' && in_array($id, $config_entities)) {
+      $entity_info[$group][$id]['type'] = $entity->id();
+      $entity_info[$group][$id]['list_url'] = NULL;
+      $entity_info[$group][$id]['add_bundle_url'] = NULL;
+      $links = array_keys($entity_bundle->getLinkTemplates());
+
+      if (in_array('add-form', $links)) {
+        $add_form_url = $entity->getLinkTemplate('add-form');
+        $valid_url = $path_validator->getUrlIfValid($add_form_url);
+        if ($valid_url != FALSE) {
+          $entity_info[$group][$id]['add_bundle_url'] = $valid_url->getRouteName();
+        }
+      }
+      $entity_info[$group][$id]['add_bundle_label'] = 'Add ' . $entity->getLabel() . ' Type';
+      if (in_array('collection', $links)) {
+        $add_form_url = $entity->getLinkTemplate('collection');
+        $valid_url = $path_validator->getUrlIfValid($add_form_url);
+        if ($valid_url != FALSE) {
+          $entity_info[$group][$id]['list_url'] = $valid_url->getRouteName();
+        }
+      }
+      $entity_info[$group][$id]['list_parametter'] = $entity->id();
+      $entity_info[$group][$id]['add_url'] = NULL;
+      $entity_info[$group][$id]['crete_permissions'] = $entity->getAdminPermission();
+      unset($entities[$entity_bundle->id()]);
+    }
+  }
+
+  \Drupal::moduleHandler()->alter('entity_disovery', $entity_info);
+  //kint($entity_info);
+  return $entity_info;
+}
+
+function adminic_tools_entity_disovery_alter(&$entity_info) {
+  // Modify Content
+  // Node
+  if (isset($entity_info['content']['node'])) {
+    $entity_info['content']['node']['list_url'] = 'system.admin_content';
+    $entity_info['content']['node']['add_bundle_url'] = 'node.type_add';
+    $entity_info['content']['node']['list_parametter'] = 'type';
+    $entity_info['content']['node']['add_url'] = 'node.add';
+  }
+  // Term
+  if (isset($entity_info['content']['taxonomy_term'])) {
+    $entity_info['content']['taxonomy_term']['add_bundle_url'] = 'entity.taxonomy_vocabulary.add_form';
+    $entity_info['content']['taxonomy_term']['add_bundle_label'] = 'New Vocabulary';
+    $entity_info['content']['taxonomy_term']['add_url'] = 'entity.taxonomy_term.add_form';
+  }
+  // Media
+  if (isset($entity_info['content']['media'])) {
+    $entity_info['content']['media']['add_url'] = 'entity.media.add_form';
+    $entity_info['content']['media']['list_url'] = 'view.media.media_page_list';
+    $entity_info['content']['media']['addlist_parametter_url'] = 'provider';
+    $entity_info['content']['media']['create_permissions'] = 'create media';
+  }
+  // Comment
+  if (isset($entity_info['content']['comment'])) {
+    $entity_info['content']['comment']['list_url'] = 'comment.admin';
+  }
+  // Paragraphs
+  if (isset($entity_info['content']['paragraph'])) {
+    $entity_info['content']['paragraph']['add_bundle_url'] = 'paragraphs.type_add';
+  }
+  // Block
+  if (isset($entity_info['content']['block_content'])) {
+    $entity_info['content']['block_content']['add_bundle_url'] = 'block_content.type_add';
+    $entity_info['content']['block_content']['create_permissions'] = 'administer blocks';
+    $entity_info['content']['block_content']['add_url'] = 'block_content.add_form';
+    $entity_info['content']['block_content']['list_url'] = 'entity.block_content.collection';
+  }
+  // Crop
+  if (isset($entity_info['content']['crop'])) {
+    $entity_info['content']['crop']['add_bundle_url'] = 'crop.type_add';
+  }
+
+
+  // Modify Configuration
+  if (isset($entity_info['configuration']['view'])) {
+    $entity_info['configuration']['view']['list_url'] = NULL;
+    $entity_info['configuration']['view']['add_bundle_url'] = 'views_ui.add';
+    $entity_info['configuration']['view']['add_bundle_label'] = 'New View';
+  }
+  if (isset($entity_info['configuration']['image_style'])) {
+    $entity_info['configuration']['image_style']['add_bundle_url'] = 'image.style_add';
+    $entity_info['configuration']['image_style']['add_bundle_label'] = 'New Image Style';
+  }
+  if (isset($entity_info['configuration']['menu'])) {
+    $entity_info['configuration']['menu']['add_bundle_label'] = 'Add Menu';
+    $entity_info['configuration']['menu']['add_url'] = 'entity.menu.add_form';
+    $entity_info['configuration']['menu']['list_url'] = 'entity.menu.edit_form';
+    $entity_info['configuration']['menu']['create_permissions'] = 'administer menu';
+  }
+  if (isset($entity_info['configuration']['user_role'])) {
+    $entity_info['configuration']['user_role']['list_url'] = NULL;
+  }
+  if (isset($entity_info['configuration']['image_style'])) {
+    $entity_info['configuration']['image_style']['list_url'] = NULL;
+  }
+  if (isset($entity_info['configuration']['filter_format'])) {
+    $entity_info['configuration']['filter_format']['list_url'] = NULL;
+  }
+  if (isset($entity_info['configuration']['block'])) {
+    $entity_info['configuration']['block']['list_url'] = NULL;
+  }
+  if (isset($entity_info['configuration']['date_format'])) {
+    $entity_info['configuration']['date_format']['list_url'] = 'entity.date_format.collection';
+  }
+}
+
+/**
+ * Implements hook_system_breadcrumb_alter().
+ */
+function adminic_tools_system_breadcrumb_alter(Breadcrumb &$breadcrumb, RouteMatchInterface $route_match, array $context) {
+  if ($breadcrumb) {
+    $title = \Drupal::service('title_resolver')->getTitle(\Drupal::request(), $route_match->getRouteObject());
+    if (!empty($title)) {
+      $breadcrumb->addLink(\Drupal\Core\Link::createFromRoute($title, '<none>'));
+    }
+  }
+}
+/**
+ * Implements hook_library_info_alter().
+ */
+function adminic_tools_library_info_alter(&$libraries, $extension) {
+  if ($extension == 'toolbar') {
+    //unset($libraries['toolbar']['css']['theme']['css/toolbar.theme.css']);
+  }
+}

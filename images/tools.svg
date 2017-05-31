@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="26px" height="26px" viewBox="0 0 26 26" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 42 (36781) - http://www.bohemiancoding.com/sketch -->
+    <title>tools</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Desktop-HD" transform="translate(-170.000000, -64.000000)" fill-rule="nonzero" fill="#FFFFFF">
+            <g id="Manage-Icons" transform="translate(170.000000, 64.000000)">
+                <g id="tools">
+                    <path d="M18.6511111,7.34888889 C17.14,5.83777778 15.1333333,5 13,5 C8.59333333,5 5,8.59333333 5,13 C5,17.4066667 8.59333333,21 13,21 C17.4066667,21 21,17.4066667 21,13 C21,10.8666667 20.1622222,8.86 18.6511111,7.34888889 Z M13,18.1933333 C10.5874074,18.1933333 8.61925926,16.2251852 8.61925926,13.8125926 C8.61925926,11.7681481 9.99037037,10.397037 11.197037,9.19037037 C11.997037,8.39037037 12.7718519,7.61555556 13,6.75259259 C13.2288889,7.6162963 13.9903704,8.39037037 14.802963,9.19037037 C16.0096296,10.397037 17.3807407,11.7681481 17.3807407,13.8125926 C17.3807407,16.2251852 15.4125926,18.1933333 13,18.1933333 Z" id="Shape"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
