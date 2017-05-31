@@ -1,7 +1,12 @@
 <?php
 
+/**
+ * @file
+ * Adminic Tools install.
+ */
+
 function adminic_tools_install() {
-  module_set_weight('adminic_toolbar', 999);
+  module_set_weight('adminic_tools', 999);
 }
 
 /**

@@ -1,216 +1,206 @@
 <?php
 
+/**
+ * @file
+ * Adminic Tools helper functions.
+ */
+
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Url;
 
-function manage_nodes() {
-  return add_manage(
-    'node',
-    'node_type',
-    'node.add',
-    'system.admin_content',
-    'type',
-    'create {bundle} content',
-    'node.type_add'
-  );
-}
-
-function manage_terms() {
-  return add_manage(
-    'taxonomy',
-    'taxonomy_vocabulary',
-    'entity.taxonomy_term.add_form',
-    'entity.taxonomy_vocabulary.overview_form',
-    NULL,
-    'administer taxonomy',
-    'entity.taxonomy_vocabulary.add_form',
-    'Add Vocabulary'
-  );
-}
-
-function manage_media() {
-  return add_manage(
-    'media_entity',
-    'media_bundle',
-    'entity.media.add_form',
-    'view.media.media_page_list',
-    'provider',
-    'create media'
-  );
-}
-
-function manage_blocks() {
-  return add_manage(
-    'block_content',
-    'block_content_type',
-    'block_content.add_form',
-    'entity.block_content.collection',
-    NULL,
-    'administer blocks',
-    'block_content.type_add'
-  );
-}
-
-function manage_paragraphs() {
-  return add_manage(
-    'paragraphs',
-    'paragraphs_type',
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    'paragraphs.type_add'
-  );
-}
-
-function manage_views() {
-  return add_manage(
-    'views_ui',
-    'view',
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    'views_ui.add'
-  );
-}
-
-function manage_image_styles() {
-  return add_manage(
-    'image',
-    'image_style',
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    'image.style_add'
-  );
-}
-
-function manage_menus() {
-  return add_manage(
-    'menu_ui',
-    'menu',
-    'entity.menu.add_form',
-    'entity.menu.edit_form',
-    NULL,
-    'administer menu'
-  );
-}
-
-function manage_comments() {
-  return add_manage(
-    'comment',
-    'comment_type',
-    NULL,
-    'comment.admin'
-  );
-}
-
-//function add_manage($module, $type, $add_url, $list_url, $list_parametter = NULL, $crete_permissions = NULL, $add_bundle_url = NULL, $add_bundle_label = NULL) {
 function add_manage($type, $add_url, $list_url, $list_parametter = NULL, $crete_permissions = NULL, $add_bundle_url = NULL, $add_bundle_label = NULL) {
   $user = \Drupal::currentUser();
+  $entity = \Drupal::entityTypeManager()->getDefinition($type);
+  $admin_permissions = $entity->getAdminPermission();
+  $link_templates = $entity->getLinkTemplates();
 
-  //if (\Drupal::moduleHandler()->moduleExists($module) == TRUE && $user->hasPermission('adminic toolbar use ' . $type)) {
-  //if ($user->hasPermission('adminic toolbar use ' . $type)) {
+  if (is_null($list_parametter)) {
+    $list_parametter = $type;
+  }
+  if (in_array('collection', $link_templates)) {
+    $collection_url = $link_templates['collection'];
+  }
+  else {
+    $collection_url = NULL;
+  }
 
-    $entity = \Drupal::entityTypeManager()->getDefinition($type);
+  $links = [];
 
-    $admin_permissions = $entity->getAdminPermission();
+  if ($user->isAuthenticated()) {
+    $links_cache_contexts[] = 'user';
 
-    $link_templates = $entity->getLinkTemplates();
-    if(is_null($list_parametter)) {
-      $list_parametter = $type;
-    }
-    if(in_array('collection', $link_templates)) {
-      $collection_url = $link_templates['collection'];
-    }
-    else {
-      $collection_url = NULL;
-    }
+    $variantions = \Drupal::entityTypeManager()->getStorage($type)->loadMultiple();
 
-    $links = [];
+    foreach ($variantions as $variantion) {
 
-    if ($user->isAuthenticated()) {
-      $links_cache_contexts[] = 'user';
+      $bundle = $variantion->id();
+      $name = $variantion->label();
 
-      $variantions = \Drupal::entityTypeManager()->getStorage($type)->loadMultiple();
-      //kint($variantions);
-      foreach ($variantions as $variantion) {
+      $links[$bundle] = [];
+      $links[$bundle]['name'] = $name;
+      $links[$bundle]['bundle'] = $bundle;
+      $links[$bundle]['attributes'] = [
+        'class' => ['content-links', 'content-' . $type . '-' . $bundle],
+      ];
 
-        $bundle = $variantion->id();
-        $name = $variantion->label();
-
-        $links[$bundle] = [];
-        $links[$bundle]['name'] = t($name);
-        $links[$bundle]['bundle'] = $bundle;
-        $links[$bundle]['attributes'] = [
-          'class' => ['content-links', 'content-' . $type . '-' . $bundle],
-        ];
-
-        // Add Route
-        if ($crete_permissions != NULL) {
-          $add_permissions = str_replace('{bundle}', $bundle, $crete_permissions);
+      // Add Route
+      if ($crete_permissions != NULL) {
+        $add_permissions = str_replace('{bundle}', $bundle, $crete_permissions);
+      }
+      if ($crete_permissions == NULL || (isset($add_permissions) && $user->hasPermission($add_permissions))) {
+        if (!is_null($add_url)) {
+          $links[$bundle]['add_url'] = Url::fromRoute($add_url, [$type => $bundle])
+            ->toString();
         }
-        if ($crete_permissions == NULL || (isset($add_permissions) && $user->hasPermission($add_permissions))) {
-          if (!is_null($add_url)) {
-            $links[$bundle]['add_url'] = Url::fromRoute($add_url, [$type => $bundle])
-              ->toString();
+      }
+
+      // Edit route
+      if ($user->hasPermission($admin_permissions)) {
+        $links[$bundle]['edit_url'] = Url::fromRoute(
+          $variantion->toUrl()->getRouteName(),
+          $variantion->toUrl()->getRouteParameters())
+          ->toString();
+      }
+
+      // List route
+      if (!is_null($list_url)) {
+        $links[$bundle]['list_url'] = Url::fromRoute($list_url, [$list_parametter => $bundle])
+          ->toString();
+      }
+
+    }
+
+    $return = [];
+    $return['#theme'] = 'adminic_content_bundler';
+
+    if ($user->hasPermission($admin_permissions)) {
+
+      if (!is_null($collection_url)) {
+        $return['#collection_url'] = $collection_url;
+      }
+
+      if (is_null($add_bundle_url) && array_key_exists('add-form', $link_templates)) {
+        $add_bundle_url = $link_templates['add-form'];
+        $return['#add_bundle_url'] = $add_bundle_url;
+      }
+      elseif (!is_null($add_bundle_url)) {
+        $return['#add_bundle_url'] = Url::fromRoute($add_bundle_url)
+          ->toString();
+      }
+
+      if (is_null($add_bundle_label)) {
+        $add_bundle_label = 'Add ' . $entity->getLabel();
+      }
+      $return['#add_bundle_text'] = $add_bundle_label;
+    }
+    $return['#links'] = $links;
+    $return['#title'] = $entity->getLabel();
+    $return['#attributes'] = [
+      'class' => ['toolbar-menu', $type . '-add'],
+    ];
+    $return['#attributes'] = [
+      '#cache' => [
+        'contexts' => Cache::mergeContexts(['user.roles:authenticated'], $links_cache_contexts),
+      ],
+    ];
+
+    return $return;
+  }
+
+  return NULL;
+}
+
+function _adminic_tools_entity_discovery() {
+  /** @var \Drupal\Core\Url $valid_url */
+  $entities = \Drupal::entityTypeManager()->getDefinitions();
+  $path_validator = \Drupal::service('path.validator');
+  $entity_info = [];
+  // Content Entities
+  foreach ($entities as $entity) {
+    /** @var \Drupal\Core\Entity\ContentEntityType $id */
+    $id = $entity->id();
+    $group = $entity->getGroup();
+    if ($group == 'content') {
+      $bundle_entity_type = $entity->getBundleEntityType();
+      if ($bundle_entity_type != NULL) {
+        $entity_bundle = \Drupal::entityTypeManager()
+          ->getDefinition($bundle_entity_type);
+        $entity_info[$group][$id]['type'] = $entity_bundle->id();
+        $entity_info[$group][$id]['list_url'] = NULL;
+        $entity_info[$group][$id]['add_bundle_url'] = NULL;
+
+        $links = array_keys($entity_bundle->getLinkTemplates());
+
+        if (in_array('add-form', $links)) {
+          $add_form_url = $entity_bundle->getLinkTemplate('add-form');
+          $valid_url = $path_validator->getUrlIfValid($add_form_url);
+          if ($valid_url != FALSE) {
+            $entity_info[$group][$id]['add_bundle_url'] = $valid_url->getRouteName();
           }
         }
 
-        // Edit route
-        if ($user->hasPermission($admin_permissions)) {
-          $links[$bundle]['edit_url'] = Url::fromRoute(
-            $variantion->toUrl()->getRouteName(),
-            $variantion->toUrl()->getRouteParameters())
-            ->toString();
+        $entity_info[$group][$id]['add_bundle_label'] = 'New ' . $entity->getLabel() . ' Type';
+        if (in_array('collection', $links)) {
+          $add_form_url = $entity_bundle->getLinkTemplate('collection');
+          $valid_url = $path_validator->getUrlIfValid($add_form_url);
+          if ($valid_url != FALSE) {
+            $entity_info[$group][$id]['list_url'] = $valid_url->getRouteName();
+          }
         }
-        //List route
-        if(!is_null($list_url)) {
-          $links[$bundle]['list_url'] = Url::fromRoute($list_url, [$list_parametter => $bundle])
-            ->toString();
-        }
-
+        $entity_info[$group][$id]['list_parametter'] = $entity->id();
+        $entity_info[$group][$id]['add_url'] = NULL;
+        $entity_info[$group][$id]['crete_permissions'] = $entity_bundle->getAdminPermission();
+        unset($entities[$entity_bundle->id()]);
       }
-
-      $return = [];
-      $return['#theme'] = 'adminic_content_bundler';
-
-      if ($user->hasPermission($admin_permissions)) {
-
-        if(!is_null($collection_url)) {
-          $return['#collection_url'] = $collection_url;
-        }
-
-        if (is_null($add_bundle_url) && array_key_exists('add-form', $link_templates)) {
-          $add_bundle_url = $link_templates['add-form'];
-          $return['#add_bundle_url'] = $add_bundle_url;
-        }
-        elseif (!is_null($add_bundle_url)) {
-          $return['#add_bundle_url'] = Url::fromRoute($add_bundle_url)
-            ->toString();
-        }
-
-        if (is_null($add_bundle_label)) {
-          $add_bundle_label = 'Add ' . $entity->getLabel();
-        }
-        $return['#add_bundle_text'] = $add_bundle_label;
-      }
-      $return['#links'] = $links;
-      $return['#title'] = $entity->getLabel();
-      $return['#attributes'] = [
-        'class' => ['toolbar-menu', $type . '-add'],
-      ];
-      $return['#attributes'] = [
-        '#cache' => [
-          'contexts' => Cache::mergeContexts(array('user.roles:authenticated'), $links_cache_contexts),
-        ]
-      ];
-
-      return $return;
     }
-  //}
+  }
 
-  return NULL;
+  $config_entities = [
+    'block',
+    'image_style',
+    'menu',
+    'view',
+    'user_role',
+    'menu_link_content',
+    'filter_format',
+    'date_format',
+  ];
+  \Drupal::moduleHandler()->alter('entity_disovery_config', $config_entities);
+  // Config entities
+  foreach ($entities as $entity) {
+    /** @var \Drupal\Core\Config\Entity\ConfigEntityType $entity */
+    $id = $entity->id();
+    $group = $entity->getGroup();
+    if ($group == 'configuration' && in_array($id, $config_entities)) {
+      $entity_info[$group][$id]['type'] = $entity->id();
+      $entity_info[$group][$id]['list_url'] = NULL;
+      $entity_info[$group][$id]['add_bundle_url'] = NULL;
+      $links = array_keys($entity->getLinkTemplates());
+
+      if (in_array('add-form', $links)) {
+        $add_form_url = $entity->getLinkTemplate('add-form');
+        $valid_url = $path_validator->getUrlIfValid($add_form_url);
+        if ($valid_url != FALSE) {
+          $entity_info[$group][$id]['add_bundle_url'] = $valid_url->getRouteName();
+        }
+      }
+
+      $entity_info[$group][$id]['add_bundle_label'] = 'Add ' . $entity->getLabel() . ' Type';
+      if (in_array('collection', $links)) {
+        $add_form_url = $entity->getLinkTemplate('collection');
+        $valid_url = $path_validator->getUrlIfValid($add_form_url);
+        if ($valid_url != FALSE) {
+          $entity_info[$group][$id]['list_url'] = $valid_url->getRouteName();
+        }
+      }
+      $entity_info[$group][$id]['list_parametter'] = $entity->id();
+      $entity_info[$group][$id]['add_url'] = NULL;
+      $entity_info[$group][$id]['crete_permissions'] = $entity->getAdminPermission();
+      unset($entities[$entity->id()]);
+    }
+  }
+
+  \Drupal::moduleHandler()->alter('entity_disovery', $entity_info);
+
+  return $entity_info;
 }
