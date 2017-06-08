@@ -1,0 +1,4 @@
+services:
+  adminic_tools.entity_discovery:
+    class: Drupal\adminic_tools\EntityDiscovery
+    arguments: ['@entity_type.manager']

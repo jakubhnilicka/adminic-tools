@@ -5,5 +5,3 @@ package: Administration
 type: module
 dependencies:
   - toolbar
-libraries:
-  - adminic_tools/global-styling
