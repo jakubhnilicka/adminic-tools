@@ -7,6 +7,13 @@
 	  border-bottom: none !important;
 		box-shadow: none;
 	}
+  .toolbar-tray-name {
+    color: #FFF;
+    padding: 1rem;
+    font-size: 1rem;
+    font-weight: normal;
+    text-transform: uppercase;
+  }
 	.toolbar-menu {
 		background-color: transparent !important;
 	}
@@ -46,11 +53,11 @@
 		  	}
 	  	}
 	  }
-	  
+
 	  /* Submenu */
 		.toolbar-tray {
 			background-color: $toolbar-secondary-color;
-			
+
 			box-shadow: none;
 			li {
 				border: none !important;

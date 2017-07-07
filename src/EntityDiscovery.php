@@ -26,6 +26,9 @@ class EntityDiscovery {
   /** @var \Drupal\Core\Extension\ModuleHandler */
   private $moduleHandler;
 
+  /** @var string */
+  private $theme;
+
   // @TODO: Fix service
   /**
    * EntityDiscovery constructor.
@@ -35,8 +38,12 @@ class EntityDiscovery {
     $this->pathValidator = $pathValidator;
     $this->moduleHandler = $moduleHandler;
     $this->currentUser = \Drupal::currentUser();
+    $this->theme = 'adminic_content_bundler';
   }
 
+  public function setTheme($theme) {
+    $this->theme = $theme;
+  }
   public function entityDiscovery() {
     /** @var \Drupal\Core\Url $valid_url */
     $entities = $this->entityTypeManager->getDefinitions();
@@ -86,7 +93,7 @@ class EntityDiscovery {
     }
 
     $config_entities = [
-      'block',
+      //'block',
       'image_style',
       'menu',
       'view',
@@ -198,7 +205,7 @@ class EntityDiscovery {
       }
 
       $return = [];
-      $return['#theme'] = 'adminic_content_bundler';
+      $return['#theme'] = $this->theme;
 
       if ($this->currentUser->hasPermission($admin_permissions)) {
 

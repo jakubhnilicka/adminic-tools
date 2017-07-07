@@ -1,0 +1,19 @@
+content.settings:
+  path: '/admin/content/settings'
+  defaults:
+    _controller: '\Drupal\adminic_tools\Controller\Content::content'
+    _title: 'Content Administration'
+  options:
+    _admin_route: TRUE
+  requirements:
+    _permission: 'access content'
+
+config.settings:
+  path: '/admin/config/settings'
+  defaults:
+    _controller: '\Drupal\adminic_tools\Controller\Config::content'
+    _title: 'Configuration Administration'
+  options:
+    _admin_route: TRUE
+  requirements:
+    _permission: 'access content'

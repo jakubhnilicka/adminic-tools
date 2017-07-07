@@ -1,0 +1,11 @@
+content.settings:
+  title: 'Content Administration'
+  route_name:  content.settings
+  parent: system.admin_content
+  weight: 101
+
+config.settings:
+  title: 'Configuration Administration'
+  route_name:  config.settings
+  parent: system.admin_content
+  weight: 102

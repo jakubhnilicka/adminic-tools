@@ -1,0 +1,42 @@
+<div class="card col-xs-12 col-sm-6 col-md-4 col-lg-3">
+  <details>
+  <summary>
+    <a href="{{ collection_url }}" class="action add-action">
+      <i class="icon-default icon-{{title|clean_class}}"></i>
+      <h3>{{ title }}</h3>
+    </a>
+  </summary>
+  <div class="details-wrapper">
+    {% if links -%}
+      <ul>
+        {%- for item in links -%}
+          <li class="content-link-page content-link-page-{{ item.bundle }}">
+            {%  if item.list_url is not empty %}
+              <a href="{{ item.list_url }}" class="list-url">{{ item.name }}</a>
+            {% else %}
+              <b>{{ item.name }}</b>
+            {% endif %}
+            <span class="actions">
+              {%  if item.add_url is not empty %}
+                <a href="{{ item.add_url }}" class="action add-action">{{ 'Add'|t }}</a>
+              {% endif %}
+              {%  if item.edit_url is not empty %}
+                <a href="{{ item.edit_url }}" class="action edit-action">{{ 'Edit'|t }}</a>
+              {% endif %}
+            </span>
+          </li>
+        {%- endfor -%}
+      </ul>
+    {% endif %}
+    {% if add_bundle_url is not empty %}
+      <div class="add-bundle">
+        {% if add_bundle_text is not empty %}
+          <a href="{{ add_bundle_url }}">{{ add_bundle_text }}</a>
+        {% else %}
+          <a href="{{ add_bundle_url }}">{{ 'Add Bundle'|t }}</a>
+        {% endif %}
+      </div>
+    {% endif %}
+    </div>
+</details>
+</div>

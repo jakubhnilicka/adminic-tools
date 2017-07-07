@@ -47,7 +47,7 @@ function adminic_tools_toolbar() {
       'tab'     => [
         '#type'       => 'link',
         '#title'      => t('Content'),
-        '#url'        => Url::fromRoute('system.admin_content'),
+        '#url'        => Url::fromRoute('content.settings'),
         '#attributes' => [
           'title' => t('My account'),
           'class' => ['toolbar-icon', 'toolbar-icon-adminic-content'],
@@ -109,7 +109,7 @@ function adminic_tools_toolbar() {
       'tab'     => [
         '#type'       => 'link',
         '#title'      => t('Config'),
-        '#url'        => Url::fromUserInput('/admin/config'),
+        '#url'        => Url::fromRoute('config.settings'),
         '#attributes' => [
           'title' => t('Config'),
           'class' => ['toolbar-icon', 'toolbar-icon-adminic-config'],
@@ -124,6 +124,57 @@ function adminic_tools_toolbar() {
       ],
       '#weight' => 101,
     ];
+
+    $items['adminic_people'] = [
+      '#type'   => 'toolbar_item',
+      'tab'     => [
+        '#type'       => 'link',
+        '#title'      => t('People'),
+        '#url'        => Url::fromRoute('entity.user.collection'),
+        '#attributes' => [
+          'title' => t('People'),
+          'class' => ['toolbar-icon', 'toolbar-icon-adminic-config'],
+        ],
+        '#cache'      => [
+          'contexts' => ['user'],
+        ],
+      ],
+      '#weight' => 102,
+    ];
+    $items['adminic_help'] = [
+      '#type'   => 'toolbar_item',
+      'tab'     => [
+        '#type'       => 'link',
+        '#title'      => t('Help'),
+        '#url'        => Url::fromRoute('help.main'),
+        '#attributes' => [
+          'title' => t('Help'),
+          'class' => ['toolbar-icon', 'toolbar-icon-adminic-config'],
+        ],
+        '#cache'      => [
+          'contexts' => ['user'],
+        ],
+      ],
+      '#weight' => 103,
+    ];
+    $items['adminic_reports'] = [
+      '#type'   => 'toolbar_item',
+      'tab'     => [
+        '#type'       => 'link',
+        '#title'      => t('Reports'),
+        '#url'        => Url::fromRoute('system.admin_reports'),
+        '#attributes' => [
+          'title' => t('Help'),
+          'class' => ['toolbar-icon', 'toolbar-icon-adminic-config'],
+        ],
+        '#cache'      => [
+          'contexts' => ['user'],
+        ],
+      ],
+      '#weight' => 104,
+    ];
+
+
     return $items;
   }
 
@@ -139,7 +190,11 @@ function adminic_tools_toolbar_alter(&$items) {
 
   foreach ($items as $key => $tab) {
     $items[$key]['#wrapper_attributes']['class'][] = $key;
+    $items[$key]['#wrapper_attributes']['group'] = 'left';
   }
+  $items['user']['#wrapper_attributes']['group'] = 'right';
+  $items['contextual']['#wrapper_attributes']['group'] = 'right';
+
   $items['user']['#wrapper_attributes']['class'][] = 'right';
   $items['adminic_home']['#weight'] = -99;
   $items['adminic_content']['#weight'] = 0;
@@ -152,7 +207,7 @@ function adminic_tools_toolbar_alter(&$items) {
   $items['coffee']['#weight'] = 13;
   $items['contextual']['#weight'] = 99;
   $items['user']['#weight'] = 99;
-  $items['admin_toolbar_tools']['#wrapper_attributes']['class'][] = 'hidden';
+  //$items['admin_toolbar_tools']['#wrapper_attributes']['class'][] = 'hidden';
 }
 
 /**
@@ -173,6 +228,17 @@ function adminic_tools_theme() {
     'adminic_content_bundler' => [
       'variables' => [
         'title'           => NULL,
+        'name' =>         NULL,
+        'links'           => [],
+        'collection_url'  => NULL,
+        'add_bundle_url'  => NULL,
+        'add_bundle_text' => NULL,
+      ],
+    ],
+    'adminic_content_page' => [
+      'variables' => [
+        'title'           => NULL,
+        'name' =>         NULL,
         'links'           => [],
         'collection_url'  => NULL,
         'add_bundle_url'  => NULL,
@@ -264,4 +330,11 @@ function adminic_tools_library_info_alter(&$libraries, $extension) {
   if ($extension == 'toolbar') {
     // unset($libraries['toolbar']['css']['theme']['css/toolbar.theme.css']);
   }
+}
+
+/**
+ * Implements hook_theme_registry_alter
+ */
+function adminic_tools_theme_registry_alter(&$theme_registry) {
+  $theme_registry['toolbar']['path'] = drupal_get_path('module', 'adminic_tools') . '/templates';
 }
