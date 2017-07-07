@@ -1,6 +1,21 @@
 $white: #FFF;
-$primary-color: #0678be;
-$toolbar-primary-color: darken(#0678be, 10%);
-$toolbar-secondary-color: #0678be;
+/* Colors*/
+$primary-color: #1C3997;
+$primary-color-ligter: #264DCC;
+$primary-color-darker: #132666;
+$primary-color-dark: #091333;
+
+$secondary-color: #39D3D6;
+$secondary-color-ligter: #98FBFD;
+$secondary-color-darker: #43AEB0;
+$secondary-color-dark: #133233;
+
+$gray-color: #F5F5F5;
+$gray-color-ligter: #FAFAFA;
+$gray-color-darker: #EBEBEB;
+$gray-color-middle: #BDBDBD;
+$gray-color-dark: #133233;
+$toolbar-primary-color: $primary-color-ligter;
+$toolbar-secondary-color: $primary-color;
 $font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 $tab-size: 2.4rem;

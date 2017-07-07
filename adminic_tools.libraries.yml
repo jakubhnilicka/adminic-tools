@@ -3,3 +3,8 @@ global-styling:
   css:
     theme:
       css/adminic_tools.css: {}
+toolbar-fix:
+  js:
+    js/toolbar-fix.js: {}
+  dependencies:
+    - toolbar/toolbar

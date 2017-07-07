@@ -21,7 +21,7 @@ class Permissions {
    */
   public function getPermissions() {
     $permissions = [];
-    $entity_discovery = _adminic_tools_entity_discovery();
+    $entity_discovery = \Drupal::service('adminic_tools.entity_discovery')->getManage();
     $blockCategories = array();
     foreach ($entity_discovery['content'] as $config_key => $config) {
       $blockCategories[] = $config_key;

@@ -7,8 +7,6 @@
 
 use Drupal\Core\Url;
 
-include 'adminic_tools.inc';
-
 /**
  * Implements hook_toolbar().
  */
@@ -16,7 +14,7 @@ function adminic_tools_toolbar() {
   $user = \Drupal::currentUser();
   if ($user->hasPermission('access toolbar')) {
 
-    $manage = get_manage();
+    $manage = \Drupal::service('adminic_tools.entity_discovery')->getManage();
     $items = [];
 
     $config = \Drupal::config('system.site');
@@ -133,37 +131,6 @@ function adminic_tools_toolbar() {
 
 }
 
-function get_manage() {
-  $blocks = _adminic_tools_entity_discovery();
-
-  $return = [];
-  foreach ($blocks['content'] as $key => $block) {
-
-    $return['content'][$key] = add_manage(
-      $block['type'],
-      $block['add_url'],
-      $block['list_url'],
-      $block['list_parametter'],
-      $block['crete_permissions'],
-      $block['add_bundle_url'],
-      $block['add_bundle_label']);
-  }
-
-  foreach ($blocks['configuration'] as $key => $block) {
-
-    $return['configuration'][$key] = add_manage(
-      $block['type'],
-      $block['add_url'],
-      $block['list_url'],
-      $block['list_parametter'],
-      $block['crete_permissions'],
-      $block['add_bundle_url'],
-      $block['add_bundle_label']);
-  }
-  return $return;
-}
-
-
 /**
  * Implements hook_toolbar_alter().
  */
@@ -190,9 +157,12 @@ function adminic_tools_toolbar_alter(&$items) {
 
 /**
  * Implements hook_page_attachments().
+ *
+ * @inheritdoc
  */
 function adminic_tools_page_attachments(array &$attachments) {
   $attachments['#attached']['library'][] = 'adminic_tools/global-styling';
+  $attachments['#attached']['library'][] = 'adminic_tools/toolbar-fix';
 }
 
 /**
