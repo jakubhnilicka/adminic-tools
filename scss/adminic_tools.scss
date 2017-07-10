@@ -394,3 +394,15 @@
 	background-size: 24px 24px !important;
 	background-image: url(../images/config.svg);
 }
+.toolbar .toolbar-bar .toolbar-tab > .toolbar-icon.toolbar-icon-adminic-users:before {
+	background-size: 24px 24px !important;
+	background-image: url(../images/users.svg);
+}
+.toolbar .toolbar-bar .toolbar-tab > .toolbar-icon.toolbar-icon-adminic-help:before {
+	background-size: 24px 24px !important;
+	background-image: url(../images/help.svg);
+}
+.toolbar .toolbar-bar .toolbar-tab > .toolbar-icon.toolbar-icon-adminic-reports:before {
+	background-size: 24px 24px !important;
+	background-image: url(../images/reports.svg);
+}

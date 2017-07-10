@@ -135,7 +135,7 @@ function adminic_tools_toolbar() {
         '#url'        => Url::fromRoute('entity.user.collection'),
         '#attributes' => [
           'title' => t('People'),
-          'class' => ['toolbar-icon', 'toolbar-icon-adminic-config'],
+          'class' => ['toolbar-icon', 'toolbar-icon-adminic-users'],
         ],
         '#cache'      => [
           'contexts' => ['user'],
@@ -151,7 +151,7 @@ function adminic_tools_toolbar() {
         '#url'        => Url::fromRoute('help.main'),
         '#attributes' => [
           'title' => t('Help'),
-          'class' => ['toolbar-icon', 'toolbar-icon-adminic-config'],
+          'class' => ['toolbar-icon', 'toolbar-icon-adminic-help'],
         ],
         '#cache'      => [
           'contexts' => ['user'],
@@ -167,7 +167,7 @@ function adminic_tools_toolbar() {
         '#url'        => Url::fromRoute('system.admin_reports'),
         '#attributes' => [
           'title' => t('Help'),
-          'class' => ['toolbar-icon', 'toolbar-icon-adminic-config'],
+          'class' => ['toolbar-icon', 'toolbar-icon-adminic-reports'],
         ],
         '#cache'      => [
           'contexts' => ['user'],
