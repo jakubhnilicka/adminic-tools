@@ -56,11 +56,33 @@ function adminic_tools_toolbar() {
           'contexts' => ['user'],
         ],
       ],
-      'tray'    => [
+      /*'tray'    => [
         '#heading' => t('Content'),
         'content'  => $manage['content'],
-      ],
+      ],*/
       '#weight' => 100,
+    ];
+
+    // Config Administration.
+    $items['adminic_config'] = [
+      '#type'   => 'toolbar_item',
+      'tab'     => [
+        '#type'       => 'link',
+        '#title'      => t('Config'),
+        '#url'        => Url::fromRoute('config.settings'),
+        '#attributes' => [
+          'title' => t('Config'),
+          'class' => ['toolbar-icon', 'toolbar-icon-adminic-config'],
+        ],
+        '#cache'      => [
+          'contexts' => ['user'],
+        ],
+      ],
+      /*'tray'    => [
+        '#heading' => t('Configuration'),
+        'content' => $manage['configuration'],
+      ],*/
+      '#weight' => 101,
     ];
 
     // Modules.
@@ -103,27 +125,7 @@ function adminic_tools_toolbar() {
       ];
     }
 
-    // Config Administration.
-    $items['adminic_config'] = [
-      '#type'   => 'toolbar_item',
-      'tab'     => [
-        '#type'       => 'link',
-        '#title'      => t('Config'),
-        '#url'        => Url::fromRoute('config.settings'),
-        '#attributes' => [
-          'title' => t('Config'),
-          'class' => ['toolbar-icon', 'toolbar-icon-adminic-config'],
-        ],
-        '#cache'      => [
-          'contexts' => ['user'],
-        ],
-      ],
-      'tray'    => [
-        '#heading' => t('Configuration'),
-        'content' => $manage['configuration'],
-      ],
-      '#weight' => 101,
-    ];
+
 
     $items['adminic_people'] = [
       '#type'   => 'toolbar_item',
