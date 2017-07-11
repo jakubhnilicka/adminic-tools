@@ -1,11 +1,11 @@
-<div class="card col-xs-12 col-sm-6 col-md-4 col-lg-3">
-  <details open>
-  <summary>
-    <a href="{{ collection_url }}" class="action add-action">
-      <i class="icon-default icon-{{title|clean_class}}"></i>
-      <h3>{{ title }}</h3>
-    </a>
-  </summary>
+<div class="card adminic col-xs-12 col-sm-6 col-md-4 col-lg-3">
+  <h4>
+    {%  if collection_url is not empty %}
+      <a href="{{ collection_url }}" class="action add-action">{{ title }}</a>
+    {% else %}
+      {{ title }}
+    {% endif %}
+  </h4>
   <div class="details-wrapper">
     {% if links -%}
       <ul>
@@ -16,14 +16,7 @@
             {% else %}
               <b>{{ item.name }}</b>
             {% endif %}
-            <span class="actions">
-              {%  if item.add_url is not empty %}
-                <a href="{{ item.add_url }}" class="action add-action">{{ 'Add'|t }}</a>
-              {% endif %}
-              {%  if item.edit_url is not empty %}
-                <a href="{{ item.edit_url }}" class="action edit-action">{{ 'Edit'|t }}</a>
-              {% endif %}
-            </span>
+            {{ item.actions }}
           </li>
         {%- endfor -%}
       </ul>
@@ -37,6 +30,5 @@
         {% endif %}
       </div>
     {% endif %}
-    </div>
-</details>
+  </div>
 </div>

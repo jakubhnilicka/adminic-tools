@@ -169,6 +169,11 @@ class EntityDiscovery {
 
         $bundle = $variantion->id();
         $name = $variantion->label();
+        $actions = [];
+        /*$actions['collapse'] = [
+          'title' => '.',
+          'url' => NULL,
+        ];*/
 
         $links[$bundle] = [];
         $links[$bundle]['name'] = $name;
@@ -181,26 +186,45 @@ class EntityDiscovery {
         if ($crete_permissions != NULL) {
           $add_permissions = str_replace('{bundle}', $bundle, $crete_permissions);
         }
+
+
         if ($crete_permissions == NULL || (isset($add_permissions) && $this->currentUser->hasPermission($add_permissions))) {
           if (!is_null($add_url)) {
-            $links[$bundle]['add_url'] = Url::fromRoute($add_url, [$type => $bundle])
-              ->toString();
+            $actions['add_url'] = [
+              'url' => Url::fromRoute($add_url, [$type => $bundle]),
+              'title' => t('Add content'),
+            ];
           }
         }
 
         // Edit route
         if ($this->currentUser->hasPermission($admin_permissions)) {
-          $links[$bundle]['edit_url'] = Url::fromRoute(
-            $variantion->toUrl()->getRouteName(),
-            $variantion->toUrl()->getRouteParameters())
-            ->toString();
+          $actions['edit_url'] = [
+            'url' =>  Url::fromRoute($variantion->toUrl()->getRouteName(), $variantion->toUrl()->getRouteParameters()),
+            'title' => t('Edit content'),
+          ];
         }
 
         // List route
         if (!is_null($list_url)) {
           $links[$bundle]['list_url'] = Url::fromRoute($list_url, [$list_parametter => $bundle])
             ->toString();
+
+          $actions['list_url'] = [
+            'url' =>  Url::fromRoute($list_url, [$list_parametter => $bundle]),
+            'title' => t('List content'),
+          ];
         }
+
+        $links[$bundle]['actions'] = [
+          '#type' => 'dropbutton',
+          '#links' => $actions,
+          '#attributes' => [
+            'class' => [
+              'small',
+            ]
+          ]
+        ];
 
       }
 
