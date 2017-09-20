@@ -5,6 +5,11 @@
  * Adminic Tools install.
  */
 
+/**
+ * Implements hook_install().
+ *
+ * @inheritdoc
+ */
 function adminic_tools_install() {
   module_set_weight('adminic_tools', 999);
 }
